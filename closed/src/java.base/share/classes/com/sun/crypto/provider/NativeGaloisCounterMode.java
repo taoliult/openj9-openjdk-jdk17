@@ -68,6 +68,7 @@ abstract class NativeGaloisCounterMode extends CipherSpi {
 
     private byte[] key;
     private boolean encryption = true;
+    private long context;
 
     private static final int DEFAULT_TAG_LEN = 16; // in bytes
     private static final int DEFAULT_IV_LEN = 12; // in bytes
@@ -109,6 +110,12 @@ abstract class NativeGaloisCounterMode extends CipherSpi {
         tagLenBytes = DEFAULT_TAG_LEN;
         blockCipher = embeddedCipher;
         this.keySize = keySize;
+
+        context = nativeCrypto.CreateContext();
+        nativeCrypto.createContextCleaner(this, context);
+        if (context == -1) {
+            throw new ProviderException("Error in creating context for NativeGaloisCounterMode.");
+        }
     }
 
     /**
@@ -144,6 +151,14 @@ abstract class NativeGaloisCounterMode extends CipherSpi {
                     keySize + " bytes");
             }
             this.key = keyValue.clone();
+
+            if (lastKey.length != this.key.length) {
+                System.out.println("Different key from last time. Need to update cipher.");
+                int ret = nativeCrypto.UpdateGCMCipher(context, this.key.length);
+                if (ret == -1) {
+                    throw new ProviderException("Error in updating cipher for NativeGaloisCounterMode.");
+                }
+            }
 
             // Check for reuse
             if (encryption) {
@@ -767,8 +782,12 @@ abstract class NativeGaloisCounterMode extends CipherSpi {
                 byte[] aad = ((aadBuffer == null) || (aadBuffer.size() == 0)) ? EMPTY_BUF : aadBuffer.toByteArray();
                 aadBuffer = null;
 
-                ret = nativeCrypto.GCMEncrypt(key, key.length,
-                        iv, iv.length,
+                int mode = 1;
+                if (-1 == nativeCrypto.GCMInit(context, mode, iv, iv.length, key, key.length)) {
+                    throw new ProviderException("Error in context init in NativeGaloisCounterMode");
+                }
+        
+                ret = nativeCrypto.GCMEncrypt(context,
                         in, inOfs, inLen,
                         out, outOfs,
                         aad, aad.length, localTagLenBytes);
@@ -960,8 +979,12 @@ abstract class NativeGaloisCounterMode extends CipherSpi {
                 inOfs = 0;
                 inLen = in.length;
                 ibuffer.reset();
-                ret = nativeCrypto.GCMDecrypt(key, key.length,
-                        iv, iv.length,
+
+                int mode = 0;
+                if (-1 == nativeCrypto.GCMInit(context, mode, iv, iv.length, key, key.length)) {
+                    throw new ProviderException("Error in context init in NativeGaloisCounterMode");
+                }
+                ret = nativeCrypto.GCMDecrypt(context,
                         in, inOfs, inLen,
                         out, outOfs,
                         aad, aad.length, tagLenBytes);

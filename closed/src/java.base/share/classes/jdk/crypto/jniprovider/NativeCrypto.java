@@ -196,6 +196,15 @@ public class NativeCrypto {
         });
     }
 
+    public void createContextCleaner(Object owner, long context) {
+        ECKeyCleaner.register(owner, new Runnable() {
+            @Override
+            public void run() {
+                NativeCrypto.this.DestroyContext(context);
+            }
+        });
+    }
+
     /* Native digest interfaces */
 
     private static final native long loadCrypto(boolean trace);
@@ -220,7 +229,7 @@ public class NativeCrypto {
 
     public final native void DigestReset(long context);
 
-    /* Native interfaces shared by CBC and ChaCha20 */
+    /* Native interfaces shared by CBC, GCM and ChaCha20 */
 
     public final native long CreateContext();
 
@@ -250,11 +259,17 @@ public class NativeCrypto {
                                              int outputOffset);
 
     /* Native GCM interfaces */
+    public final native int UpdateGCMCipher(long context,
+                                             int keylen);
 
-    public final native int GCMEncrypt(byte[] key,
-                                       int keylen,
+    public final native int GCMInit(long context,
+                                    int mode,
                                        byte[] iv,
                                        int ivlen,
+                                    byte[] key,
+                                    int keylen);
+
+    public final native int GCMEncrypt(long context,
                                        byte[] input,
                                        int inOffset,
                                        int inLen,
@@ -264,10 +279,7 @@ public class NativeCrypto {
                                        int aadLen,
                                        int tagLen);
 
-    public final native int GCMDecrypt(byte[] key,
-                                       int keylen,
-                                       byte[] iv,
-                                       int ivlen,
+    public final native int GCMDecrypt(long context,
                                        byte[] input,
                                        int inOffset,
                                        int inLen,
