@@ -196,15 +196,6 @@ public class NativeCrypto {
         });
     }
 
-    public void createContextCleaner(Object owner, long context) {
-        ECKeyCleaner.register(owner, new Runnable() {
-            @Override
-            public void run() {
-                NativeCrypto.this.DestroyContext(context);
-            }
-        });
-    }
-
     /* Native digest interfaces */
 
     private static final native long loadCrypto(boolean trace);

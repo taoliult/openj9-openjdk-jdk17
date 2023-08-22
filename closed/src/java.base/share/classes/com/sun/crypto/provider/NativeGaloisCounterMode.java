@@ -112,7 +112,6 @@ abstract class NativeGaloisCounterMode extends CipherSpi {
         this.keySize = keySize;
 
         context = nativeCrypto.CreateContext();
-        nativeCrypto.createContextCleaner(this, context);
         if (context == -1) {
             throw new ProviderException("Error in creating context for NativeGaloisCounterMode.");
         }
