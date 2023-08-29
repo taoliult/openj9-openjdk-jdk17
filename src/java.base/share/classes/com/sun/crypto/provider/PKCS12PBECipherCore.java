@@ -123,6 +123,7 @@ final class PKCS12PBECipherCore {
                     nativeCrypto = NativeCrypto.getNativeCrypto();
                 }
                 if (nativeCrypto.PBEDerive(passwd, passwd.length, salt, salt.length, key, ic, n, type, hashIndex) != -1) {
+                    System.out.println("Tao DEBUG - Into nativeCrypto.PBEDerive()");
                     return key;
                 } else if (nativeCryptTrace) {
                     System.err.println("Native PBE derive failed for algorithm " + hashAlgo + ", using Java implementation.");

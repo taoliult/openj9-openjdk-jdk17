@@ -2952,7 +2952,7 @@ Java_jdk_crypto_jniprovider_NativeCrypto_PBEDerive
     unsigned char *nativeSalt = NULL;
     unsigned char *nativeKey = NULL;
     jint ret = -1;
-
+fprintf(stdout, "TAO DEBUG - Into PEBDerive.\n");
     switch (hashAlgorithm) {
         case jdk_crypto_jniprovider_NativeCrypto_SHA1_160:
             digestAlgorithm = (*OSSL_sha1)();
@@ -2988,6 +2988,7 @@ Java_jdk_crypto_jniprovider_NativeCrypto_PBEDerive
 
     if (1 == (*OSSL_PKCS12_key_gen)(nativePassword, passwordLength, nativeSalt, saltLength, id, iterations, n, nativeKey, digestAlgorithm)) {
         ret = 0;
+        fprintf(stdout, "TAO DEBUG - Into OSSL_PKCS12_key_gen.\n");
     }
 
 cleanup:
