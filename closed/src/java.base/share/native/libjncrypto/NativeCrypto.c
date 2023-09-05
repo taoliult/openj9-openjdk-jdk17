@@ -1771,6 +1771,8 @@ JNIEXPORT jint JNICALL Java_jdk_crypto_jniprovider_NativeCrypto_RSAEP
     RSA* rsaKey = NULL;
     int msg_len = 0;
 
+    fprintf(stdout, "TAO DEBUG - In RSAEP.\n");
+
     kNative = (unsigned char*)((*env)->GetPrimitiveArrayCritical(env, k, 0));
     if (NULL == kNative) {
         return -1;
@@ -1809,6 +1811,8 @@ JNIEXPORT jint JNICALL Java_jdk_crypto_jniprovider_NativeCrypto_RSADP
     int msg_len2 = 0;
     unsigned char* k2 = NULL;
     RSA* rsaKey = NULL;
+
+    fprintf(stdout, "TAO DEBUG - In RSADP.\n");
 
     kNative = (unsigned char*)((*env)->GetPrimitiveArrayCritical(env, k, 0));
     if (NULL == kNative) {
