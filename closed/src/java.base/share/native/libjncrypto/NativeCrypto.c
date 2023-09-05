@@ -862,6 +862,8 @@ JNIEXPORT jlong JNICALL Java_jdk_crypto_jniprovider_NativeCrypto_DigestCreateCon
     const EVP_MD *digestAlg = NULL;
     OpenSSLMDContext *context = NULL;
 
+    fprintf(stdout, "TAO DEBUG - In DigestCreateContext.\n");
+
     switch (algoIdx) {
         case jdk_crypto_jniprovider_NativeCrypto_SHA1_160:
             digestAlg = (*OSSL_sha1)();
@@ -949,6 +951,8 @@ JNIEXPORT jint JNICALL Java_jdk_crypto_jniprovider_NativeCrypto_DigestUpdate
 {
     OpenSSLMDContext *context = (OpenSSLMDContext*)(intptr_t) c;
     unsigned char* messageNative = NULL;
+
+    fprintf(stdout, "TAO DEBUG - In DigestUpdate.\n");
 
     if (NULL == context) {
         return -1;
@@ -1104,6 +1108,8 @@ JNIEXPORT jint JNICALL Java_jdk_crypto_jniprovider_NativeCrypto_CBCInit
     unsigned char* keyNative = NULL;
     const EVP_CIPHER * evp_cipher1 = NULL;
 
+    fprintf(stdout, "TAO DEBUG - In CBCInit.\n");
+
     if (NULL == ctx) {
         return -1;
     }
@@ -1164,6 +1170,8 @@ JNIEXPORT jint JNICALL Java_jdk_crypto_jniprovider_NativeCrypto_CBCUpdate
     unsigned char* inputNative;
     unsigned char* outputNative;
 
+    fprintf(stdout, "TAO DEBUG - In CBCUpdate.\n");
+
     if (NULL == ctx) {
         return -1;
     }
@@ -1216,6 +1224,8 @@ JNIEXPORT jint JNICALL Java_jdk_crypto_jniprovider_NativeCrypto_CBCFinalEncrypt
     unsigned char* inputNative;
     unsigned char* outputNative;
 
+    fprintf(stdout, "TAO DEBUG - In CBCFinalEncrypt.\n");
+
     inputNative = (unsigned char*)((*env)->GetPrimitiveArrayCritical(env, input, 0));
     if (NULL == inputNative) {
         return -1;
@@ -1259,6 +1269,8 @@ JNIEXPORT jint JNICALL Java_jdk_crypto_jniprovider_NativeCrypto_UpdateGCMCipher
 {
     EVP_CIPHER_CTX *ctx = (EVP_CIPHER_CTX*)(intptr_t) c;
     const EVP_CIPHER* evp_gcm_cipher = NULL;
+
+    fprintf(stdout, "TAO DEBUG - In UpdateGCMCipher.\n");
 
     if (NULL == ctx) {
         return -1;
@@ -1304,6 +1316,8 @@ JNIEXPORT jint JNICALL Java_jdk_crypto_jniprovider_NativeCrypto_GCMInit
     EVP_CIPHER_CTX *ctx = (EVP_CIPHER_CTX*)(intptr_t) c;
     unsigned char* ivNative = NULL;
     unsigned char* keyNative = NULL;
+
+    fprintf(stdout, "TAO DEBUG - In GCMInit.\n");
 
     if (NULL == ctx) {
         return ret;
@@ -1364,6 +1378,8 @@ JNIEXPORT jint JNICALL Java_jdk_crypto_jniprovider_NativeCrypto_GCMEncrypt
     
     unsigned char* outputNative = NULL;
     unsigned char* aadNative = NULL;
+
+    fprintf(stdout, "TAO DEBUG - In GCMEncrypt.\n");
 
     outputNative = (unsigned char*)((*env)->GetPrimitiveArrayCritical(env, output, 0));
     if (NULL == outputNative) {
@@ -1449,6 +1465,8 @@ JNIEXPORT jint JNICALL Java_jdk_crypto_jniprovider_NativeCrypto_GCMDecrypt
     unsigned char* aadNative = NULL;
     int len = 0, plaintext_len = 0;
     unsigned char* outputNative = NULL;
+
+    fprintf(stdout, "TAO DEBUG - In GCMDecrypt.\n");
 
     outputNative = (unsigned char*)((*env)->GetPrimitiveArrayCritical(env, output, 0));
     if (NULL == outputNative) {
@@ -1538,6 +1556,8 @@ JNIEXPORT jlong JNICALL Java_jdk_crypto_jniprovider_NativeCrypto_createRSAPublic
     BIGNUM* eBN = NULL;
     int ret = 0;
 
+    fprintf(stdout, "TAO DEBUG - In createRSAPublicKey.\n");
+
     nNative = (unsigned char*)((*env)->GetPrimitiveArrayCritical(env, n, 0));
     if (NULL == nNative) {
         return -1;
@@ -1601,6 +1621,8 @@ JNIEXPORT jlong JNICALL Java_jdk_crypto_jniprovider_NativeCrypto_createRSAPrivat
     BIGNUM* qinvBN = NULL;
 
     int ret = 0;
+
+    fprintf(stdout, "TAO DEBUG - In createRSAPrivateCrtKey.\n");
 
     nNative = (unsigned char*)((*env)->GetPrimitiveArrayCritical(env, n, 0));
     if (NULL == nNative) {
@@ -2041,6 +2063,8 @@ JNIEXPORT jint JNICALL Java_jdk_crypto_jniprovider_NativeCrypto_ChaCha20Init
     const EVP_CIPHER *evp_cipher1 = NULL;
     int encrypt = -1;
 
+    fprintf(stdout, "TAO DEBUG - In ChaCha20Init.\n");
+
     if (NULL == ctx) {
         return -1;
     }
@@ -2114,6 +2138,8 @@ JNIEXPORT jint JNICALL Java_jdk_crypto_jniprovider_NativeCrypto_ChaCha20Update
     unsigned char *outputNative = NULL;
     unsigned char *aadNative = NULL;
 
+    fprintf(stdout, "TAO DEBUG - In ChaCha20Update.\n");
+
     if (NULL == ctx) {
         return -1;
     }
@@ -2174,6 +2200,8 @@ JNIEXPORT jint JNICALL Java_jdk_crypto_jniprovider_NativeCrypto_ChaCha20FinalEnc
     unsigned char *outputNative = NULL;
     EVP_CIPHER_CTX *ctx = (EVP_CIPHER_CTX*)(intptr_t) c;
 
+    fprintf(stdout, "TAO DEBUG - In ChaCha20FinalEncrypt.\n");
+
     if (NULL == ctx) {
         return -1;
     }
@@ -2219,6 +2247,8 @@ JNIEXPORT jint JNICALL Java_jdk_crypto_jniprovider_NativeCrypto_ChaCha20FinalDec
     unsigned char *inputNative = NULL;
     unsigned char *outputNative = NULL;
     unsigned char *aadNative = NULL;
+
+    fprintf(stdout, "TAO DEBUG - In ChaCha20FinalDecrypt.\n");
 
     EVP_CIPHER_CTX *ctx = (EVP_CIPHER_CTX*)(intptr_t) c;
 
@@ -2344,6 +2374,8 @@ Java_jdk_crypto_jniprovider_NativeCrypto_ECGenerateKeyPair
     const BIGNUM *sBN = NULL;
     EC_KEY *nativeKey = (EC_KEY *)(intptr_t) key;
 
+    fprintf(stdout, "TAO DEBUG - In ECGenerateKeyPair.\n");
+
     if (NULL == nativeKey) {
         goto cleanup;
     }
@@ -2453,6 +2485,8 @@ Java_jdk_crypto_jniprovider_NativeCrypto_ECCreatePublicKey
     BIGNUM *xBN = NULL;
     BIGNUM *yBN = NULL;
 
+    fprintf(stdout, "TAO DEBUG - In ECCreatePublicKey.\n");
+
     nativeX = (unsigned char*)((*env)->GetPrimitiveArrayCritical(env, x, 0));
     if (NULL == nativeX) {
         goto cleanup;
@@ -2510,6 +2544,8 @@ Java_jdk_crypto_jniprovider_NativeCrypto_ECCreatePrivateKey
     unsigned char *nativeS = NULL;
     EC_KEY *privateKey = (EC_KEY*)(intptr_t) key;
     BIGNUM *sBN = NULL;
+
+    fprintf(stdout, "TAO DEBUG - In ECCreatePrivateKey.\n");
 
     nativeS = (unsigned char*)((*env)->GetPrimitiveArrayCritical(env, s, 0));
     if (NULL == nativeS) {
@@ -2711,6 +2747,8 @@ Java_jdk_crypto_jniprovider_NativeCrypto_ECEncodeGF
     BN_CTX *ctx = NULL;
     int ret = 0;
 
+    fprintf(stdout, "TAO DEBUG - In ECEncodeGF.\n");
+
     nativeA = (unsigned char *)((*env)->GetPrimitiveArrayCritical(env, a, 0));
     if (NULL == nativeA) {
         goto releaseArrays;
@@ -2861,6 +2899,8 @@ Java_jdk_crypto_jniprovider_NativeCrypto_ECDeriveKey
     unsigned char *nativeSecret = NULL;
     const EC_POINT *publicKeyPoint = NULL;
 
+    fprintf(stdout, "TAO DEBUG - In ECDeriveKey.\n");
+
     nativeSecret = (unsigned char*)((*env)->GetPrimitiveArrayCritical(env, secret, 0));
     if (NULL == nativeSecret) {
         goto cleanup;
@@ -2956,7 +2996,9 @@ Java_jdk_crypto_jniprovider_NativeCrypto_PBEDerive
     unsigned char *nativeSalt = NULL;
     unsigned char *nativeKey = NULL;
     jint ret = -1;
-fprintf(stdout, "TAO DEBUG - Into PEBDerive.\n");
+
+    fprintf(stdout, "TAO DEBUG - Into PEBDerive.\n");
+
     switch (hashAlgorithm) {
         case jdk_crypto_jniprovider_NativeCrypto_SHA1_160:
             digestAlgorithm = (*OSSL_sha1)();
@@ -3029,6 +3071,8 @@ Java_jdk_crypto_jniprovider_NativeCrypto_XDHCreateKeys
 
     unsigned char *privateKeyArray = NULL;
     unsigned char *publicKeyArray = NULL;
+
+    fprintf(stdout, "TAO DEBUG - Into XDHCreateKeys.\n");
 
     // Create PKEY (public/private pair) based on curve type (X25519 or X448)
     pctx = (*OSSL_EVP_PKEY_CTX_new_id)(curveType, NULL);
@@ -3103,6 +3147,8 @@ Java_jdk_crypto_jniprovider_NativeCrypto_XDHGenerateSecret
     unsigned char *privateKeyArray = NULL;
     unsigned char *publicKeyArray = NULL;
     unsigned char *sharedKeyArray = NULL;
+
+    fprintf(stdout, "TAO DEBUG - Into XDHGenerateSecret.\n");
 
     privateKeyArray = (unsigned char *)((*env)->GetPrimitiveArrayCritical(env, privateKey, 0));
     if (NULL == privateKeyArray) {
