@@ -25,6 +25,7 @@ package openj9.internal.security;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.security.Provider;
 import java.security.Provider.Service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -764,8 +765,6 @@ public final class RestrictedSecurity {
                     providerName = providerName.substring(0, pos);
                 }
 
-                // Provider name defined in provider construction method.
-                providerName = getProvidersSimpleName(providerName);
                 providersSimpleName.add(pNum - 1, providerName);
             }
 
@@ -932,7 +931,9 @@ public final class RestrictedSecurity {
          * @return true if the Service is allowed
          */
         boolean isRestrictedServiceAllowed(Service service) {
-            String providerName = service.getProvider().getName();
+            Provider provider = service.getProvider();
+            String providerName = provider.getName();
+            String providerClassName = provider.getClass().getName();
 
             // Provider with argument, remove argument.
             // e.g. SunPKCS11-NSS-FIPS, remove argument -NSS-FIPS.
@@ -940,6 +941,11 @@ public final class RestrictedSecurity {
             providerName = (pos < 0) ? providerName : providerName.substring(0, pos);
 
             Constraint[] constraints = providerConstraints.get(providerName);
+
+            if (constraints == null) {
+                // Continue checking if the class name is the key.
+                constraints = providerConstraints.get(providerClassName);
+            }
 
             if (constraints == null) {
                 // Disallow unknown providers.
@@ -1039,10 +1045,20 @@ public final class RestrictedSecurity {
                 providerName = providerName.substring(0, pos);
             }
 
-            // Provider name defined in provider construction method.
-            providerName = getProvidersSimpleName(providerName);
+            // For the provider which provider name is different with its class
+            // name. First, check if the provider class name is in the restricted
+            // security provider list without removing the package name.
+            if (providersSimpleName.contains(providerName)) {
+                if (debug != null) {
+                    debug.println("The provider " + providerName + " class is allowed in restricted security mode.");
+                }
+                return true;
+            }
 
-            // Check if the provider is in restricted security provider list.
+            // Provider name without package name.
+            providerName = getProvidersNameWithoutPackage(providerName);
+
+            // Check if the provider name is in restricted security provider list.
             // If not, the provider won't be registered.
             if (providersSimpleName.contains(providerName)) {
                 if (debug != null) {
@@ -1066,24 +1082,19 @@ public final class RestrictedSecurity {
         }
 
         /**
-         * Get the provider name defined in provider construction method.
+         * Get the provider name without package name.
          *
-         * @param providerName provider name or provider with packages
-         * @return provider name defined in provider construction method
+         * @param providerName provider name with package name
+         * @return provider name without package name
          */
-        private static String getProvidersSimpleName(String providerName) {
-            if (providerName.equals("com.sun.security.sasl.Provider")) {
-                // The main class for the SunSASL provider is com.sun.security.sasl.Provider.
-                return "SunSASL";
-            } else {
-                // Remove the provider's class package names if present.
-                int pos = providerName.lastIndexOf('.');
-                if (pos >= 0) {
-                    providerName = providerName.substring(pos + 1);
-                }
-                // Provider without package names.
-                return providerName;
+        private static String getProvidersNameWithoutPackage(String providerName) {
+            // Remove the provider's class package names if present.
+            int pos = providerName.lastIndexOf('.');
+            if (pos >= 0) {
+                providerName = providerName.substring(pos + 1);
             }
+            // Provider without package names.
+            return providerName;
         }
 
         /**

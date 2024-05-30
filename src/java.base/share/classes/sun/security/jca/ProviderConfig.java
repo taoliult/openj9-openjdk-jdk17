@@ -170,13 +170,11 @@ final class ProviderConfig {
      */
     @SuppressWarnings("deprecation")
     Provider getProvider() {
-        if (!RestrictedSecurity.isProviderAllowed(provName)) {
-            // We're in restricted security mode which does not allow this provider,
-            // return without loading.
-            return null;
-        }
         // volatile variable load
         Provider p = provider;
+        // There is RestrictedSecurity check in the ServiceLoader before the
+        // provider is initialized. So the check has already occurred for the
+        // provider where provider != null.
         if (p != null) {
             return p;
         }
@@ -187,6 +185,11 @@ final class ProviderConfig {
                 return p;
             }
             if (shouldLoad() == false) {
+                return null;
+            }
+            if (!RestrictedSecurity.isProviderAllowed(provName)) {
+                // We're in restricted security mode which does not allow this provider,
+                // return without loading.
                 return null;
             }
 
@@ -368,8 +371,14 @@ final class ProviderConfig {
                     if (debug != null) {
                         debug.println("Found SL Provider named " + pName);
                     }
-                    if (pName.equals(pn)) {
-                        return p;
+                    if (RestrictedSecurity.isFIPSEnabled() && !RestrictedSecurity.isFIPS1402()) {
+                        if (p.getClass().getName().equals(pn)) {
+                            return p;
+                        }
+                    } else {
+                        if (pName.equals(pn) || p.getClass().getName().equals(pn)) {
+                            return p;
+                        }
                     }
                 } catch (SecurityException | ServiceConfigurationError |
                          InvalidParameterException ex) {
