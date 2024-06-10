@@ -663,24 +663,19 @@ public final class RestrictedSecurity {
     }
 
     /**
-     * Get the provider name defined in provider construction method.
+     * Get the provider name without package name.
      *
-     * @param providerName provider name or provider with packages
-     * @return provider name defined in provider construction method
+     * @param providerName provider name with package name
+     * @return provider name without package nam
      */
     private static String getProvidersSimpleName(String providerName) {
-        if (providerName.equals("com.sun.security.sasl.Provider")) {
-            // The main class for the SunSASL provider is com.sun.security.sasl.Provider.
-            return "SunSASL";
-        } else {
-            // Remove the provider's class package names if present.
-            int pos = providerName.lastIndexOf('.');
-            if (pos >= 0) {
-                providerName = providerName.substring(pos + 1);
-            }
-            // Provider without package names.
-            return providerName;
+        // Remove the provider's class package names if present.
+        int pos = providerName.lastIndexOf('.');
+        if (pos >= 0) {
+            providerName = providerName.substring(pos + 1);
         }
+        // Provider without package names.
+        return providerName;
     }
 
     /**
@@ -1239,8 +1234,6 @@ public final class RestrictedSecurity {
                 providerName = providerName.substring(0, pos);
             }
 
-            // Provider name defined in provider construction method.
-            providerName = getProvidersSimpleName(providerName);
             boolean providerChanged = false;
             if (update) {
                 String previousProviderName = providersSimpleName.get(providerPos - 1);
