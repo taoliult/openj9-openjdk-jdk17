@@ -1056,7 +1056,7 @@ public final class RestrictedSecurity {
             }
 
             // Provider name without package name.
-            providerName = getProvidersNameWithoutPackage(providerName);
+            providerName = getProvidersSimpleName(providerName);
 
             // Check if the provider name is in restricted security provider list.
             // If not, the provider won't be registered.
@@ -1087,7 +1087,7 @@ public final class RestrictedSecurity {
          * @param providerName provider name with package name
          * @return provider name without package name
          */
-        private static String getProvidersNameWithoutPackage(String providerName) {
+        private static String getProvidersSimpleName(String providerName) {
             // Remove the provider's class package names if present.
             int pos = providerName.lastIndexOf('.');
             if (pos >= 0) {
