@@ -1569,8 +1569,6 @@ public final class RestrictedSecurity {
                     printStackTraceAndExit(nsae);
                 }
             }
-            // Provider without package names.
-            return providerName;
         }
 
         /**
