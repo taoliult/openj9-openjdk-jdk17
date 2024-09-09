@@ -30,15 +30,22 @@ ifeq (true,$(BUILD_OPENJCEPLUS))
       $(OPENJCEPLUS_TOPDIR)/NOTICES.md \
       $(LEGAL_DST_DIR)/NOTICES.md)
 
+  .PHONY: check-libs
+
+  check-libs:
+      ifeq (,$(filter %.dll %.so %.x, $(call FindFiles, $(OPENJCEPLUS_TOPDIR)/target)))
+        $(error Complied OpenJCEPlus native library not found)
+      endif
+
   # Copy OpenJCEPlus native libraries.
+  $(OPENJCEPLUS_JGSKIT_LIBS_COPY): check-libs
   $(eval $(call SetupCopyFiles, OPENJCEPLUS_JGSKIT_LIBS_COPY, \
       SRC := $(OPENJCEPLUS_TOPDIR)/target, \
       FILES := $(filter %.dll %.so %.x, $(call FindFiles, $(OPENJCEPLUS_TOPDIR)/target)), \
       FLATTEN := true, \
       DEST := $(LIB_DST_DIR), \
   ))
-
-  TARGETS += $(OPENJCEPLUS_JGSKIT_LIBS_COPY)
+  TARGETS += check-libs $(OPENJCEPLUS_JGSKIT_LIBS_COPY)
 
   # Bundle GSKIT library.
   OPENJCEPLUS_OCK_DIR := $(OPENJCEPLUS_TOPDIR)/ock/jgsk_sdk/lib64
