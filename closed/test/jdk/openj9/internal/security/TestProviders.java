@@ -108,7 +108,15 @@ public class TestProviders {
                 // Test base profile - no provider list
                 Arguments.of("Test-Profile.BaseNoProviderList",
                         System.getProperty("test.src") + "/provider-java.security",
-                        "No providers are specified as part of the Restricted Security profile")
+                        "No providers are specified as part of the Restricted Security profile"),
+                // Test profile - provider must be specified using the fully-qualified class name
+                Arguments.of("Test-Profile.ProviderClassName",
+                        System.getProperty("test.src") + "/provider-java.security",
+                        "Provider must be specified using the fully-qualified class name"),
+                // Test profile - provider format is incorrect
+                Arguments.of("Test-Profile.ProviderFormat",
+                        System.getProperty("test.src") + "/provider-java.security",
+                        "Provider format is incorrect")
         );
     }
  

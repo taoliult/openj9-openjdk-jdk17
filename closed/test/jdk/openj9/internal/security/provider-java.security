@@ -399,3 +399,28 @@ RestrictedSecurity.Test-Profile.BaseNoProviderList.desc.name = Test Base Profile
 RestrictedSecurity.Test-Profile.BaseNoProviderList.desc.default = true
 RestrictedSecurity.Test-Profile.BaseNoProviderList.desc.hash = SHA256:e71c49d65fd291efe75993ccbe6999e6cfb26bf9ef3e8424cb086c7e2a225ce6
 RestrictedSecurity.Test-Profile.BaseNoProviderList.tls.disabledAlgorithms =
+
+#
+# Test-Profile.ProviderClassName
+# Test profile - provider must be specified using the fully-qualified class name
+#
+RestrictedSecurity.Test-Profile.ProviderClassName.desc.name = Test Provider Class Name
+RestrictedSecurity.Test-Profile.ProviderClassName.desc.default = true
+RestrictedSecurity.Test-Profile.ProviderClassName.desc.hash = SHA256:e71c49d65fd291efe75993ccbe6999e6cfb26bf9ef3e8424cb086c7e2a225ce6
+RestrictedSecurity.Test-Profile.ProviderClassName.tls.disabledAlgorithms =
+
+RestrictedSecurity.Test-Profile.ProviderClassName.jce.provider.1 = OpenJCEPlusFIPS
+
+#
+# Test-Profile.ProviderFormat
+# Test profile - provider format is incorrect
+#
+RestrictedSecurity.Test-Profile.ProviderFormat.desc.name = Test Provider Format
+RestrictedSecurity.Test-Profile.ProviderFormat.desc.default = true
+RestrictedSecurity.Test-Profile.ProviderFormat.desc.hash = SHA256:e71c49d65fd291efe75993ccbe6999e6cfb26bf9ef3e8424cb086c7e2a225ce6
+RestrictedSecurity.Test-Profile.ProviderFormat.tls.disabledAlgorithms =
+
+RestrictedSecurity.Test-Profile.ProviderFormat.jce.provider.1 = com.ibm.crypto.plus.provider.OpenJCEPlusFIPS [ \
+    {AlgorithmParameterGenerator, AESGCM, *), \
+    {Signature, SHA512withRSA, *}]
+
