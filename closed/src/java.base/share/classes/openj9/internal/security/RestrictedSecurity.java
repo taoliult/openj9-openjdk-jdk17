@@ -1544,10 +1544,10 @@ public final class RestrictedSecurity {
                         hexString.append(String.format("%02x", hashByte & 0xff));
                     }
                     String resultHashHex = hexString.toString();
-                    if (debug != null) {
-                        debug.println("\tCalculated hash for '" + profileID + "': " + resultHashHex);
-                        debug.println("\tExpected hash for '" + profileID + "': " + expectedHash);
-                    }
+                    //if (debug != null) {
+                        System.out.println("\tTAO DEBUG - Calculated hash for '" + profileID + "': " + resultHashHex);
+                        System.out.println("\tTAO DEBUG - Expected hash for '" + profileID + "': " + expectedHash);
+                    //}
                     if (!resultHashHex.equalsIgnoreCase(expectedHash)) {
                         printStackTraceAndExit("Hex produced from profile is not the same is a "
                             + "base profile, so a hash value is mandatory.");
