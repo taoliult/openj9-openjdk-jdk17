@@ -61,10 +61,10 @@ public class TestProperties {
                 //         System.getProperty("test.src") + "/property-java.security",
                 //         "The property names: RestrictedSecurity.Test-Profile.Extended_2.jce.providerWrongTypo " +
                 //                 "in profile RestrictedSecurity.Test-Profile.Extended_2 \\(or a base profile\\) are not recognized"),
-                // 4 - Test profile - profile not exist
+                // 4 - Test profile - profile not exist without version part
                 Arguments.of("Test-Profile-NotExist",
                         System.getProperty("test.src") + "/property-java.security",
-                        "Test-Profile.NotExist.Base is not present in the java.security file.")
+                        "Test-Profile-NotExist is not present in the java.security file.")
                 // // 5 - Test profile - Multi Default profile
                 // Arguments.of("Test-Profile-MultiDefault",
                 //         System.getProperty("test.src") + "/property-java.security",
