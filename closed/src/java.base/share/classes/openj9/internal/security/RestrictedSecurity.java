@@ -347,7 +347,7 @@ public final class RestrictedSecurity {
             boolean profileExists = false;
             for (Object keyObject : props.keySet()) {
                 if (keyObject instanceof String key) {
-                    if (key.startsWith(potentialProfileID)) {
+                    if (key.startsWith(potentialProfileID + '.')) {
                         profileExists = true;
                         if (key.endsWith(".desc.default")) {
                             // Check if property is set to true.
