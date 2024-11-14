@@ -45,7 +45,7 @@ public class TestProperties {
 
     private static Stream<Arguments> patternMatches_expectedExitValue0() {
         return Stream.of(
-                // 1 - Test property - Same beginnings of the profile name without version
+                // 1 - Test property - Same beginnings of the profile name without version.
                 Arguments.of("Test-Profile-SameStartWithoutVersion",
                         System.getProperty("test.src") + "/property-java.security",
                         "(?s)(?=.*Sun)(?=.*\\bSunJCE\\b)(?=.*SunJSSE)")
