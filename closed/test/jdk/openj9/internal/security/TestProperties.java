@@ -171,7 +171,7 @@ public class TestProperties {
                 "-Dsemeru.fips=true",
                 "-Dsemeru.customprofile=" + customprofile,
                 "-Djava.security.properties=" + securityPropertyFile,
-                "TestProviders"
+                "TestProperties"
         );
         outputAnalyzer.reportDiagnosticSummary();
         outputAnalyzer.shouldHaveExitValue(0).shouldMatch(expected);
