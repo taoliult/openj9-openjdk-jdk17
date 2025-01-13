@@ -107,7 +107,7 @@ public final class RestrictedSecurity {
                     }
                 });
 
-        boolean isOsSupported, isArchSupported;
+        boolean isOsSupported, isArchSupported, isJDKBuildSupported;
         // Check whether the NSS FIPS solution is supported.
         isOsSupported = false;
         for (String os: supportedPlatformsNSS.get("OS")) {
@@ -136,7 +136,12 @@ public final class RestrictedSecurity {
                 isArchSupported = true;
             }
         }
-        isOpenJCEPlusSupported = isOsSupported && isArchSupported;
+        isJDKBuildSupported = true;
+        String javaRuntimeVersion = props[5];
+        if (javaRuntimeVersion.contains("Nightly") && javaRuntimeVersion.contains("internal")) {
+            isJDKBuildSupported = false;
+        }
+        isOpenJCEPlusSupported = isOsSupported && isArchSupported && isJDKBuildSupported;
 
         // Check the default solution to see if FIPS is supported.
         isFIPSSupported = isNSSSupported;
