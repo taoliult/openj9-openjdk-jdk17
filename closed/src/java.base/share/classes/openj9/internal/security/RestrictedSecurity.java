@@ -102,7 +102,8 @@ public final class RestrictedSecurity {
                                 System.getProperty("semeru.customprofile"),
                                 System.getProperty("os.name"),
                                 System.getProperty("os.arch"),
-                                System.getProperty("semeru.fips.allowsetproperties") };
+                                System.getProperty("semeru.fips.allowsetproperties"),
+                                System.getProperty("java.runtime.version") };
                     }
                 });
 
