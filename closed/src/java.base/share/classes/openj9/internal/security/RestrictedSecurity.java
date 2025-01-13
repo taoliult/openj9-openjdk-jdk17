@@ -136,10 +136,10 @@ public final class RestrictedSecurity {
                 isArchSupported = true;
             }
         }
-        isJDKBuildSupported = true;
+        isJDKBuildSupported = false;
         String javaRuntimeVersion = props[5];
-        if (javaRuntimeVersion.contains("Nightly") && javaRuntimeVersion.contains("internal")) {
-            isJDKBuildSupported = false;
+        if (!javaRuntimeVersion.contains("Nightly") || !javaRuntimeVersion.contains("internal")) {
+            isJDKBuildSupported = true;
         }
         isOpenJCEPlusSupported = isOsSupported && isArchSupported && isJDKBuildSupported;
 
