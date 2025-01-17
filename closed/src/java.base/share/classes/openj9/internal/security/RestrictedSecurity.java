@@ -68,7 +68,7 @@ public final class RestrictedSecurity {
 
     private static final boolean isNSSSupported;
     private static final boolean isOpenJCEPlusSupported;
-    private static final boolean isOpenJCEPlusModuleExist;
+    private static boolean isOpenJCEPlusModuleExist;
 
     private static final boolean userSetProfile;
     private static final boolean shouldEnableSecurity;
