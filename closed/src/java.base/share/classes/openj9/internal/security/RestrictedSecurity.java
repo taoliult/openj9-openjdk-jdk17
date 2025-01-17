@@ -42,6 +42,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -67,6 +68,7 @@ public final class RestrictedSecurity {
 
     private static final boolean isNSSSupported;
     private static final boolean isOpenJCEPlusSupported;
+    private static final boolean isOpenJCEPlusModuleExist;
 
     private static final boolean userSetProfile;
     private static final boolean shouldEnableSecurity;
@@ -102,12 +104,11 @@ public final class RestrictedSecurity {
                                 System.getProperty("semeru.customprofile"),
                                 System.getProperty("os.name"),
                                 System.getProperty("os.arch"),
-                                System.getProperty("semeru.fips.allowsetproperties"),
-                                System.getProperty("java.runtime.version") };
+                                System.getProperty("semeru.fips.allowsetproperties") };
                     }
                 });
 
-        boolean isOsSupported, isArchSupported, isJDKBuildSupported;
+        boolean isOsSupported, isArchSupported;
         // Check whether the NSS FIPS solution is supported.
         isOsSupported = false;
         for (String os: supportedPlatformsNSS.get("OS")) {
@@ -136,12 +137,15 @@ public final class RestrictedSecurity {
                 isArchSupported = true;
             }
         }
-        isJDKBuildSupported = false;
-        String javaRuntimeVersion = props[5];
-        if (!javaRuntimeVersion.contains("Nightly") || !javaRuntimeVersion.contains("internal")) {
-            isJDKBuildSupported = true;
+        isOpenJCEPlusSupported = isOsSupported && isArchSupported;
+
+        // Check whether the OpenJCEPlus module exists.
+        isOpenJCEPlusModuleExist = false;
+        ModuleLayer layer = ModuleLayer.boot();
+        Optional<Module> module = layer.findModule("openjceplus");
+        if (module.isPresent()) {
+            isOpenJCEPlusModuleExist = true;
         }
-        isOpenJCEPlusSupported = isOsSupported && isArchSupported && isJDKBuildSupported;
 
         // Check the default solution to see if FIPS is supported.
         isFIPSSupported = isNSSSupported;
@@ -391,6 +395,11 @@ public final class RestrictedSecurity {
         if (profileID.contains("OpenJCEPlus") && !isOpenJCEPlusSupported) {
             printStackTraceAndExit("OpenJCEPlus RestrictedSecurity profiles are not supported"
                     + " on this platform.");
+        }
+
+        if (profileID.contains("OpenJCEPlus") && !isOpenJCEPlusModuleExist) {
+            printStackTraceAndExit("FIPS 140-3 profile specified. Required OpenJCEPlus"
+                    + " module not found.");
         }
 
         if (debug != null) {
