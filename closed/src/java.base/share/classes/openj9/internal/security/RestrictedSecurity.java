@@ -1,6 +1,6 @@
 /*
  * ===========================================================================
- * (c) Copyright IBM Corp. 2022, 2024 All Rights Reserved
+ * (c) Copyright IBM Corp. 2022, 2025 All Rights Reserved
  * ===========================================================================
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -68,7 +68,7 @@ public final class RestrictedSecurity {
 
     private static final boolean isNSSSupported;
     private static final boolean isOpenJCEPlusSupported;
-    private static boolean isOpenJCEPlusModuleExist;
+    private static final boolean isOpenJCEPlusModuleExist;
 
     private static final boolean userSetProfile;
     private static final boolean shouldEnableSecurity;
@@ -140,12 +140,9 @@ public final class RestrictedSecurity {
         isOpenJCEPlusSupported = isOsSupported && isArchSupported;
 
         // Check whether the OpenJCEPlus module exists.
-        isOpenJCEPlusModuleExist = false;
         ModuleLayer layer = ModuleLayer.boot();
         Optional<Module> module = layer.findModule("openjceplus");
-        if (module.isPresent()) {
-            isOpenJCEPlusModuleExist = true;
-        }
+        isOpenJCEPlusModuleExist = module.isPresent();
 
         // Check the default solution to see if FIPS is supported.
         isFIPSSupported = isNSSSupported;
@@ -397,7 +394,7 @@ public final class RestrictedSecurity {
                     + " on this platform.");
         }
 
-        if (profileID.contains("OpenJCEPlus") && !isOpenJCEPlusModuleExist) {
+        if (!isOpenJCEPlusModuleExist && profileID.contains("OpenJCEPlus")) {
             printStackTraceAndExit("FIPS 140-3 profile specified. Required OpenJCEPlus"
                     + " module not found.");
         }
