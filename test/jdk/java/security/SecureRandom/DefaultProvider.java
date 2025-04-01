@@ -23,6 +23,8 @@
 
 import static java.lang.System.out;
 import java.security.NoSuchAlgorithmException;
+import java.security.Provider;
+import java.security.Security;
 import java.security.SecureRandom;
 
 /**
@@ -38,6 +40,12 @@ public class DefaultProvider {
     public static void main(String[] args) throws NoSuchAlgorithmException {
         out.println("Operating System: " + OS_NAME);
 
+        Provider[] providers = Security.getProviders();
+        boolean isOpenJCEPlusFirst = "OpenJCEPlus".equals(providers[0].getName());
+        if (isOpenJCEPlusFirst) {
+            System.setProperty("test.provider.name", "OpenJCEPlus");
+        }
+
         /* Test default provider used with constructor */
         out.println("TEST: Default provider with constructor");
         SecureRandom secureRandom = new SecureRandom();
@@ -49,28 +57,36 @@ public class DefaultProvider {
         out.println("Passed, default provider with constructor: " + provider);
 
         /* Test default provider with getInstance(String algorithm) */
-        out.println("TEST: SHA1PRNG supported on all platforms by SUN provider");
-        String algorithm = "SHA1PRNG";
+        String algorithm;
+        if (isOpenJCEPlusFirst) {
+            out.println("TEST: SHA256DRBG supported on all platforms by OpenJCEPlus provider");
+            algorithm = "SHA256DRBG";
+        } else {
+            out.println("TEST: SHA1PRNG supported on all platforms by SUN provider");
+            algorithm = "SHA1PRNG";
+            
+        }
         provider = System.getProperty("test.provider.name", "SUN");
-
         SecureRandom instance = SecureRandom.getInstance(algorithm);
         assertInstance(instance, algorithm, provider);
         out.println("Passed.");
 
-        if (!OS_NAME.startsWith(WINDOWS)) {
-            out.println("TEST: NativePRNG supported on all platforms"
-                    + "(except Windows), by SUN provider");
-            algorithm = "NativePRNG";
-            provider = System.getProperty("test.provider.name", "SUN");
-        } else {
-            out.println(
-                    "TEST: Windows-PRNG supported on windows by SunMSCAPI provider");
-            algorithm = "Windows-PRNG";
-            provider = "SunMSCAPI";
+        if (!isOpenJCEPlusFirst) {
+            if (!OS_NAME.startsWith(WINDOWS)) {
+                out.println("TEST: NativePRNG supported on all platforms"
+                        + "(except Windows), by SUN provider");
+                algorithm = "NativePRNG";
+                provider = System.getProperty("test.provider.name", "SUN");
+            } else {
+                out.println(
+                        "TEST: Windows-PRNG supported on windows by SunMSCAPI provider");
+                algorithm = "Windows-PRNG";
+                provider = "SunMSCAPI";
+            }
+            instance = SecureRandom.getInstance(algorithm);
+            assertInstance(instance, algorithm, provider);
+            out.println("Passed.");
         }
-        instance = SecureRandom.getInstance(algorithm);
-        assertInstance(instance, algorithm, provider);
-        out.println("Passed.");
     }
 
     private static void assertInstance(SecureRandom instance,

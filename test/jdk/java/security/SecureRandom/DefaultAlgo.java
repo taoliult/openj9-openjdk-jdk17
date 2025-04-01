@@ -79,6 +79,12 @@ public class DefaultAlgo {
         out.println(pName + " with " + Arrays.toString(algos));
         int pos = Security.insertProviderAt(p, 1);
 
+        Provider[] providers = Security.getProviders();
+        if ("OpenJCEPlus".equals(providers[1].getName())) {
+            System.setProperty("test.provider.name", "OpenJCEPlus");
+            System.setProperty("test.default.secure.random.algorithm.name", "SHA256DRBG");
+        }
+
         boolean isLegacy = pName.equals("SampleLegacy");
         try {
             if (isLegacy) {
