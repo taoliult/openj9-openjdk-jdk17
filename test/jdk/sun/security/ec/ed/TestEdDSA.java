@@ -342,6 +342,8 @@ public class TestEdDSA {
         sig.initSign(privKey);
         sig.update(msgBytes);
         computedSig = sig.sign();
+        System.out.println("TAO computedSig: " + Arrays.toString(computedSig));
+        System.out.println("TAO HexFormat.of().parseHex(signature): " + Arrays.toString(HexFormat.of().parseHex(signature)));
         if (!Arrays.equals(computedSig, HexFormat.of().parseHex(signature))) {
             throw new RuntimeException("Incorrect signature");
         }
