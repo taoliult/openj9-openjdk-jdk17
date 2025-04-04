@@ -23,6 +23,7 @@
 
 import static java.lang.System.out;
 import java.security.NoSuchAlgorithmException;
+import java.security.Provider;
 import java.security.SecureRandom;
 
 /**
@@ -37,6 +38,11 @@ public class DefaultProvider {
 
     public static void main(String[] args) throws NoSuchAlgorithmException {
         out.println("Operating System: " + OS_NAME);
+
+        Provider[] providers = Security.getProviders();
+        if (providers[0].getName().equals("OpenJCEPlus")) {
+            System.setProperty("test.provider.name", "OpenJCEPlus");
+        }
 
         /* Test default provider used with constructor */
         out.println("TEST: Default provider with constructor");
