@@ -79,6 +79,11 @@ public class DefaultAlgo {
         out.println(pName + " with " + Arrays.toString(algos));
         int pos = Security.insertProviderAt(p, 1);
 
+        Provider[] providers = Security.getProviders();
+        if (providers[0].getName().equals("OpenJCEPlus")) {
+            System.setProperty("test.provider.name", "OpenJCEPlus");
+        }
+
         boolean isLegacy = pName.equals("SampleLegacy");
         try {
             if (isLegacy) {
