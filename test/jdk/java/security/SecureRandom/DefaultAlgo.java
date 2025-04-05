@@ -33,14 +33,13 @@ import sun.security.provider.SunEntries;
  * @test
  * @bug 8228613 8246613 8248505
  * @summary Ensure that the default SecureRandom algo used is based
- *     on the registration ordering, and falls to next provider
- *     if none are found
+ *          on the registration ordering, and falls to next provider
+ *          if none are found
  * @modules java.base/sun.security.provider
  */
 public class DefaultAlgo {
 
-    private static final String SR_IMPLCLASS =
-            "sun.security.provider.SecureRandom";
+    private static final String SR_IMPLCLASS = "sun.security.provider.SecureRandom";
 
     public static void main(String[] args) throws Exception {
         String[] algos = { "A", "B", "C" };
@@ -52,9 +51,9 @@ public class DefaultAlgo {
 
     private static void test3rdParty(String[] algos) {
         Provider[] provs = {
-            new SampleLegacyProvider(algos),
-            new SampleServiceProvider(algos),
-            new CustomProvider(algos)
+                new SampleLegacyProvider(algos),
+                new SampleServiceProvider(algos),
+                new CustomProvider(algos)
         };
         for (Provider p : provs) {
             checkDefault(p, algos);
@@ -74,7 +73,7 @@ public class DefaultAlgo {
         }
     }
 
-    private static void checkDefault(Provider p, String ... algos) {
+    private static void checkDefault(Provider p, String... algos) {
         String pName = p.getName();
         out.println(pName + " with " + Arrays.toString(algos));
         int pos = Security.insertProviderAt(p, 1);
@@ -84,13 +83,20 @@ public class DefaultAlgo {
             System.setProperty("test.provider.name", "OpenJCEPlus");
         }
 
+        for (int i = 0; i < providers.length; i++) {
+            System.out.println(i);
+            System.out.println("Provider Name: " + providers[i].getName());
+            System.out.println("Provider Version: " + providers[i].getVersion());
+            System.out.println("===");
+        }
+
         boolean isLegacy = pName.equals("SampleLegacy");
         try {
             if (isLegacy) {
                 for (String s : algos) {
                     validate(new SecureRandom(), pName, s);
                     p.remove("SecureRandom." + s);
-                    out.println("removed "  + s);
+                    out.println("removed " + s);
                 }
                 validate(new SecureRandom(), System.getProperty("test.provider.name", "SUN"),
                         System.getProperty("test.default.secure.random.algorithm.name",
@@ -144,16 +150,18 @@ public class DefaultAlgo {
             super("Custom", "1.0", "test provider overrides putService with " +
                     " custom service with legacy registration");
             for (String s : listOfSupportedRNGs) {
-                putService(new CustomService(this, "SecureRandom", s ,
+                putService(new CustomService(this, "SecureRandom", s,
                         SR_IMPLCLASS));
             }
         }
+
         @Override
         protected void putService(Provider.Service s) {
             // convert to legacy puts
             put(s.getType() + "." + s.getAlgorithm(), s.getClassName());
             put(s.getType() + ":" + s.getAlgorithm(), s);
         }
+
         @Override
         public Provider.Service getService(String type, String algo) {
             return (Provider.Service) get(type + ":" + algo);
