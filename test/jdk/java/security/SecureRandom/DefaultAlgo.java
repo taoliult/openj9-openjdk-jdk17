@@ -79,7 +79,7 @@ public class DefaultAlgo {
         int pos = Security.insertProviderAt(p, 1);
 
         Provider[] providers = Security.getProviders();
-        if (providers[0].getName().equals("OpenJCEPlus")) {
+        if (providers[1].getName().equals("OpenJCEPlus")) {
             System.setProperty("test.provider.name", "OpenJCEPlus");
         }
 

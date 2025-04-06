@@ -45,6 +45,13 @@ public class DefaultProvider {
             System.setProperty("test.provider.name", "OpenJCEPlus");
         }
 
+        for (int i = 0; i < providers.length; i++) {
+            System.out.println(i);
+            System.out.println("Provider Name: " + providers[i].getName());
+            System.out.println("Provider Version: " + providers[i].getVersion());
+            System.out.println("===");
+        }
+
         /* Test default provider used with constructor */
         out.println("TEST: Default provider with constructor");
         SecureRandom secureRandom = new SecureRandom();
