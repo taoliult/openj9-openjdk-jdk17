@@ -41,7 +41,8 @@ public class DefaultProvider {
         out.println("Operating System: " + OS_NAME);
 
         Provider[] providers = Security.getProviders();
-        if (providers[0].getName().equals("OpenJCEPlus")) {
+        boolean isOpenJCEPlusFirst = providers[0].getName().equals("OpenJCEPlus");
+        if (isOpenJCEPlusFirst) {
             System.setProperty("test.provider.name", "OpenJCEPlus");
         }
 
@@ -64,7 +65,7 @@ public class DefaultProvider {
 
         /* Test default provider with getInstance(String algorithm) */
         out.println("TEST: SHA1PRNG supported on all platforms by SUN provider");
-        String algorithm = "SHA1PRNG";
+        String algorithm = (isOpenJCEPlusFirst) ? "SHA256DRBG" : "SHA1PRNG";
         provider = System.getProperty("test.provider.name", "SUN");
 
         SecureRandom instance = SecureRandom.getInstance(algorithm);

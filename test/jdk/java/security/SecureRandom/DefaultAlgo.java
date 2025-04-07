@@ -81,6 +81,7 @@ public class DefaultAlgo {
         Provider[] providers = Security.getProviders();
         if (providers[1].getName().equals("OpenJCEPlus")) {
             System.setProperty("test.provider.name", "OpenJCEPlus");
+            System.getProperty("test.default.secure.random.algorithm.name", "SHA256DRBG");
         }
 
         for (int i = 0; i < providers.length; i++) {
