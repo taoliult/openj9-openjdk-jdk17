@@ -342,7 +342,8 @@ public class TestEdDSA {
         sig.initSign(privKey);
         sig.update(msgBytes);
         computedSig = sig.sign();
-        System.out.println("TAO Sig algorithm provider: " + sig.getProvider().getName());
+        System.out.println("TAO Sig algorithm provider name: " + sig.getProvider().getName());
+        System.out.println("TAO Sig algorithm class name: " + signature.getClass().getName());
         System.out.println("TAO computedSig: " + Arrays.toString(computedSig));
         System.out.println("TAO HexFormat.of().parseHex(signature): " + Arrays.toString(HexFormat.of().parseHex(signature)));
         if (!Arrays.equals(computedSig, HexFormat.of().parseHex(signature))) {
