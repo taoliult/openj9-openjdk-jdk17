@@ -335,7 +335,7 @@ public class TestEdDSA {
             new EdECPrivateKeySpec(namedSpec, privKeyBytes);
         KeyFactory kf = KeyFactory.getInstance(algorithm);
         PrivateKey privKey = kf.generatePrivate(privKeySpec);
-        Signature sig = Signature.getInstance(algorithm);
+        Signature sig = Signature.getInstance(algorithm, "OpenJCEPlus");
         if (params != null) {
             sig.setParameter(params);
         }
