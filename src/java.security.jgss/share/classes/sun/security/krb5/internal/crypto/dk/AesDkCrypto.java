@@ -102,17 +102,21 @@ public class AesDkCrypto extends DkCrypto {
     }
 
     public byte[] stringToKey(char[] password, String salt, byte[] s2kparams)
-        throws GeneralSecurityException {
+            throws GeneralSecurityException {
 
         byte[] saltUtf8 = null;
         try {
             saltUtf8 = salt.getBytes(UTF_8);
             return stringToKey(password, saltUtf8, s2kparams);
         } catch (Exception e) {
+            System.out.println("Exception caught: " + e); // prints class + message
+            System.out.println("Exception class: " + e.getClass()); // prints just the class
+            System.out.println("Exception message: " + e.getMessage()); // prints message
+            e.printStackTrace(); // full details
             return null;
         } finally {
             if (saltUtf8 != null) {
-                Arrays.fill(saltUtf8, (byte)0);
+                Arrays.fill(saltUtf8, (byte) 0);
             }
         }
     }
