@@ -239,24 +239,38 @@ public class EncryptionKey
             switch (keyType) {
                 case EncryptedData.ETYPE_DES_CBC_CRC:
                 case EncryptedData.ETYPE_DES_CBC_MD5:
+                        System.out.println("TAO DEBUG - 1");
+                        System.out.println("TAO DEBUG - 1 " + Des.string_to_key_bytes(pwsalt));
                         return Des.string_to_key_bytes(pwsalt);
 
                 case EncryptedData.ETYPE_DES3_CBC_HMAC_SHA1_KD:
+                        System.out.println("TAO DEBUG - 2");
+                        System.out.println("TAO DEBUG - 2 " + Des3.stringToKey(pwsalt));
                         return Des3.stringToKey(pwsalt);
 
                 case EncryptedData.ETYPE_ARCFOUR_HMAC:
+                        System.out.println("TAO DEBUG - 3");
+                        System.out.println("TAO DEBUG - 3" + ArcFourHmac.stringToKey(password));
                         return ArcFourHmac.stringToKey(password);
 
                 case EncryptedData.ETYPE_AES128_CTS_HMAC_SHA1_96:
+                        System.out.println("TAO DEBUG - 4");
+                        System.out.println("TAO DEBUG - 4" + Aes128.stringToKey(password, salt, s2kparams));
                         return Aes128.stringToKey(password, salt, s2kparams);
 
                 case EncryptedData.ETYPE_AES256_CTS_HMAC_SHA1_96:
+                        System.out.println("TAO DEBUG - 5");
+                        System.out.println("TAO DEBUG - 5" + Aes256.stringToKey(password, salt, s2kparams));
                         return Aes256.stringToKey(password, salt, s2kparams);
 
                 case EncryptedData.ETYPE_AES128_CTS_HMAC_SHA256_128:
+                        System.out.println("TAO DEBUG - 6");
+                        System.out.println("TAO DEBUG - 6" + Aes128Sha2.stringToKey(password, salt, s2kparams));
                         return Aes128Sha2.stringToKey(password, salt, s2kparams);
 
                 case EncryptedData.ETYPE_AES256_CTS_HMAC_SHA384_192:
+                        System.out.println("TAO DEBUG - 7");
+                        System.out.println("TAO DEBUG - 7" + Aes256Sha2.stringToKey(password, salt, s2kparams));
                     return Aes256Sha2.stringToKey(password, salt, s2kparams);
 
                 default:
