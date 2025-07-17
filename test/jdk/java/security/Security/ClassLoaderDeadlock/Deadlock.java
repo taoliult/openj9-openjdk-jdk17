@@ -32,10 +32,13 @@
  * @bug 4944382
  * @summary make sure we do not deadlock loading signed JAR with getInstance()
  * @library ./Deadlock.jar
- * @run main/othervm/timeout=60 Deadlock
+ * @run main/othervm/timeout=30 Deadlock
  */
 
 import java.security.*;
+import java.security.Provider;
+import java.security.Provider.Service;
+import java.security.Security;
 
 public class Deadlock implements Runnable {
 
@@ -44,6 +47,7 @@ public class Deadlock implements Runnable {
     public void run() {
         try {
             SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
+            System.out.println("Provider: " + random.getProvider());
             System.out.println("getInstance() ok: " + random);
         } catch (Exception e) {
             System.out.println("Exception during getInstance() call: " + e);
@@ -51,7 +55,7 @@ public class Deadlock implements Runnable {
         }
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {           
         Deadlock d = new Deadlock();
         Thread t = new Thread(d);
         t.start();
