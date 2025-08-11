@@ -152,7 +152,6 @@ public final class RestrictedSecurity {
         final String targetClass = "java.util.jar.JarVerifier";
         final String targetModule = "java.base";
 
-        // All threads' stacks without java.management
         for (java.util.Map.Entry<Thread, StackTraceElement[]> e : Thread.getAllStackTraces().entrySet()) {
             StackTraceElement[] stack = e.getValue();
             if (stack == null)
