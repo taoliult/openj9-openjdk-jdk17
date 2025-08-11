@@ -1696,12 +1696,7 @@ public final class RestrictedSecurity {
                 String digestAlgo = hashInfo[0].trim();
                 String expectedHash = hashInfo[1].trim();
                 try {
-                    MessageDigest md = null;
-                    Provider providers[] = Security.getProviders();
-                    for (Provider p : providers) {
-                        md = MessageDigest.getInstance(digestAlgo, p);
-                        if (md != null) break;
-                    }
+                    MessageDigest md = MessageDigest.getInstance(digestAlgo, "SUN");
                     byte[] allInfoArray = allInfo.stream()
                                                  .sorted()
                                                  .collect(Collectors.joining("\n"))
