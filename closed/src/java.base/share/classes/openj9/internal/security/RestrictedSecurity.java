@@ -27,11 +27,9 @@ import java.nio.charset.StandardCharsets;
 import java.security.AccessController;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.PrivilegedAction;
 import java.security.Provider;
 import java.security.Provider.Service;
-import java.security.Security;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -46,7 +44,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -1705,7 +1702,7 @@ public final class RestrictedSecurity {
                 String digestAlgo = hashInfo[0].trim();
                 String expectedHash = hashInfo[1].trim();
                 try {
-                    MessageDigest md = MessageDigest.getInstance(digestAlgo, "SUN");
+                    MessageDigest md = MessageDigest.getInstance(digestAlgo);
                     byte[] allInfoArray = allInfo.stream()
                                                  .sorted()
                                                  .collect(Collectors.joining("\n"))
@@ -1724,7 +1721,7 @@ public final class RestrictedSecurity {
                         printStackTraceAndExit("Hex produced from profile is not the same is a "
                             + "base profile, so a hash value is mandatory.");
                     }
-                } catch (NoSuchAlgorithmException | NoSuchProviderException nsae ) {
+                } catch (NoSuchAlgorithmException nsae ) {
                     if (debug != null) {
                         debug.println("The hash algorithm specified for '"
                             + profileID + "' is not available.");
