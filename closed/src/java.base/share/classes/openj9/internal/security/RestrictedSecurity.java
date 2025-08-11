@@ -23,10 +23,14 @@
  */
 package openj9.internal.security;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
 import java.nio.charset.StandardCharsets;
 import java.security.AccessController;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.PrivilegedAction;
 import java.security.Provider;
 import java.security.Provider.Service;
@@ -149,16 +153,37 @@ public final class RestrictedSecurity {
         super();
     }
 
+    // private static boolean isJarVerifierInStackTrace() {
+    //     java.util.function.Predicate<Class<?>> isJarVerifier =
+    //             clazz -> "java.util.jar.JarVerifier".equals(clazz.getName())
+    //                   && "java.base".equals(clazz.getModule().getName());
+
+    //     java.util.function.Function<Stream<StackWalker.StackFrame>, Boolean> matcher =
+    //             stream -> stream.map(StackWalker.StackFrame::getDeclaringClass)
+    //                             .anyMatch(isJarVerifier);
+
+    //     return StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk(matcher);
+    // }
+
     private static boolean isJarVerifierInStackTrace() {
-        java.util.function.Predicate<Class<?>> isJarVerifier =
-                clazz -> "java.util.jar.JarVerifier".equals(clazz.getName())
-                      && "java.base".equals(clazz.getModule().getName());
+        final String targetClass = "java.util.jar.JarVerifier";
+        final String targetModule = "java.base";
 
-        java.util.function.Function<Stream<StackWalker.StackFrame>, Boolean> matcher =
-                stream -> stream.map(StackWalker.StackFrame::getDeclaringClass)
-                                .anyMatch(isJarVerifier);
+        ThreadMXBean mx = ManagementFactory.getThreadMXBean();
+        ThreadInfo[] infos = mx.dumpAllThreads(false, false);
 
-        return StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk(matcher);
+        for (ThreadInfo ti : infos) {
+            if (ti == null)
+                continue;
+            for (StackTraceElement ste : ti.getStackTrace()) {
+                if (targetClass.equals(ste.getClassName())) {
+                    if (targetModule.equals(ste.getModuleName())) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -1715,7 +1740,7 @@ public final class RestrictedSecurity {
                         printStackTraceAndExit("Hex produced from profile is not the same is a "
                             + "base profile, so a hash value is mandatory.");
                     }
-                } catch (NoSuchAlgorithmException nsae) {
+                } catch (NoSuchAlgorithmException | NoSuchProviderException nsae ) {
                     if (debug != null) {
                         debug.println("The hash algorithm specified for '"
                             + profileID + "' is not available.");
