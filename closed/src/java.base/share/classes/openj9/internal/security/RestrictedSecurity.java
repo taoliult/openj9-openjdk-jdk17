@@ -23,9 +23,6 @@
  */
 package openj9.internal.security;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.ThreadInfo;
-import java.lang.management.ThreadMXBean;
 import java.nio.charset.StandardCharsets;
 import java.security.AccessController;
 import java.security.MessageDigest;
@@ -169,13 +166,12 @@ public final class RestrictedSecurity {
         final String targetClass = "java.util.jar.JarVerifier";
         final String targetModule = "java.base";
 
-        ThreadMXBean mx = ManagementFactory.getThreadMXBean();
-        ThreadInfo[] infos = mx.dumpAllThreads(false, false);
-
-        for (ThreadInfo ti : infos) {
-            if (ti == null)
+        // All threads' stacks without java.management
+        for (java.util.Map.Entry<Thread, StackTraceElement[]> e : Thread.getAllStackTraces().entrySet()) {
+            StackTraceElement[] stack = e.getValue();
+            if (stack == null)
                 continue;
-            for (StackTraceElement ste : ti.getStackTrace()) {
+            for (StackTraceElement ste : stack) {
                 if (targetClass.equals(ste.getClassName())) {
                     if (targetModule.equals(ste.getModuleName())) {
                         return true;
