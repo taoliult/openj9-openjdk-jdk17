@@ -150,18 +150,6 @@ public final class RestrictedSecurity {
         super();
     }
 
-    // private static boolean isJarVerifierInStackTrace() {
-    //     java.util.function.Predicate<Class<?>> isJarVerifier =
-    //             clazz -> "java.util.jar.JarVerifier".equals(clazz.getName())
-    //                   && "java.base".equals(clazz.getModule().getName());
-
-    //     java.util.function.Function<Stream<StackWalker.StackFrame>, Boolean> matcher =
-    //             stream -> stream.map(StackWalker.StackFrame::getDeclaringClass)
-    //                             .anyMatch(isJarVerifier);
-
-    //     return StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk(matcher);
-    // }
-
     private static boolean isJarVerifierInStackTrace() {
         final String targetClass = "java.util.jar.JarVerifier";
         final String targetModule = "java.base";
