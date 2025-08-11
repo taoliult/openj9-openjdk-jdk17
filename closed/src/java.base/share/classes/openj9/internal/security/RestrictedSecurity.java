@@ -30,6 +30,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivilegedAction;
 import java.security.Provider;
 import java.security.Provider.Service;
+import java.security.Security;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -44,6 +45,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -662,7 +664,7 @@ public final class RestrictedSecurity {
         if (!isNullOrBlank(descSunsetDate)) {
             try {
                 isSunset = LocalDate.parse(descSunsetDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-                        .isBefore(LocalDate.now());
+                        .isBefore(getTodayWithoutUsingZoneID());
             } catch (DateTimeParseException except) {
                 printStackTraceAndExit(
                         "Restricted security policy sunset date is incorrect, the correct format is yyyy-MM-dd.");
@@ -673,6 +675,19 @@ public final class RestrictedSecurity {
             debug.println("Restricted security policy is sunset: " + isSunset);
         }
         return isSunset;
+    }
+
+    /**
+     * Returns the current local date ("today") without using ZoneId.systemDefault()
+     * or other java.time APIs that might load time zone data (tzdb) from JAR files.
+     * 
+     * This method is designed to avoid potential classloading deadlocks or delays
+     * caused by reading zone rules from external resources.
+     */
+    private static LocalDate getTodayWithoutUsingZoneID() {
+        long nowMillis = System.currentTimeMillis();
+        int offsetMillis = TimeZone.getDefault().getOffset(nowMillis);
+        return LocalDate.ofEpochDay(Math.floorDiv(nowMillis + offsetMillis, 86_400_000L));
     }
 
     /**
@@ -1681,7 +1696,12 @@ public final class RestrictedSecurity {
                 String digestAlgo = hashInfo[0].trim();
                 String expectedHash = hashInfo[1].trim();
                 try {
-                    MessageDigest md = MessageDigest.getInstance(digestAlgo);
+                    MessageDigest md = null;
+                    Provider providers[] = Security.getProviders();
+                    for (Provider p : providers) {
+                        md = MessageDigest.getInstance(digestAlgo, p);
+                        if (md != null) break;
+                    }
                     byte[] allInfoArray = allInfo.stream()
                                                  .sorted()
                                                  .collect(Collectors.joining("\n"))

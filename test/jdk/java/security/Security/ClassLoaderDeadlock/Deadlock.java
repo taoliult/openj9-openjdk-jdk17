@@ -32,7 +32,7 @@
  * @bug 4944382
  * @summary make sure we do not deadlock loading signed JAR with getInstance()
  * @library ./Deadlock.jar
- * @run main/othervm/timeout=60 Deadlock
+ * @run main/othervm/timeout=30 Deadlock
  */
 
 import java.security.*;
