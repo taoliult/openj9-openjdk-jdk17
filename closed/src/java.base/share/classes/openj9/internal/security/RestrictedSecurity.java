@@ -86,7 +86,11 @@ public final class RestrictedSecurity {
 
     private static final Set<String> unmodifiableProperties = new HashSet<>();
 
+    private static LocalDate localNow;
+
     static {
+        localNow = LocalDate.now();
+
         @SuppressWarnings("removal")
         String[] props = AccessController.doPrivileged(
                 new PrivilegedAction<>() {
@@ -670,7 +674,7 @@ public final class RestrictedSecurity {
         if (!isNullOrBlank(descSunsetDate)) {
             try {
                 isSunset = LocalDate.parse(descSunsetDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-                        .isBefore(getTodayWithoutUsingZoneID());
+                        .isBefore(localNow);
             } catch (DateTimeParseException except) {
                 printStackTraceAndExit(
                         "Restricted security policy sunset date is incorrect, the correct format is yyyy-MM-dd.");
