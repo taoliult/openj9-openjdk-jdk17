@@ -642,30 +642,34 @@ public final class RestrictedSecurity {
 
         int expireMonths = monthsToPolicySunset(restricts.descSunsetDate);
 
-        if (expireMonths == 0) { // Check if the SunsetDate expired.
-            if (ignoreSunsetExpiration) {
-                if (!supressSunsetWarning) {
-                    System.err.println("WARNING: The current security policy expired on " + restricts.descSunsetDate
-                            + ", but the system property semeru.restrictedsecurity.ignoresunsetexpiration=true is set."
-                            + " Sunset enforcement is being ignored — this configuration is NOT secure.");
-                }
-            } else {
-                printStackTraceAndExit(
-                        "Restricted security policy has expired.");
+        if (supressSunsetWarning) {
+            if (expireMonths == 0 && !ignoreSunsetExpiration) {
+                System.exit(1);
             }
-        } else if (expireMonths <= 6) { // Check if the SunsetDate will expire within 6 months.
-            if (!supressSunsetWarning) {
-                if ("140-3".equals(restricts.jdkFipsMode)) {
-                    System.err.println("WARNING: FIPS 140-3 configuration for security policy " + restricts.profileID
-                            + " will expire on " + restricts.descSunsetDate
-                            + ". Please migrate to a new release of Semeru that bundles a newer FIPS 140-3 module when available.");
-                } else if ("140-2".equals(restricts.jdkFipsMode)) {
-                    System.err.println("WARNING: FIPS 140-2 configuration for security policy " + restricts.profileID
-                            + " will expire on " + restricts.descSunsetDate + ". ");
+        } else {
+            if (expireMonths == 0) { // Check if the SunsetDate expired.
+                if (ignoreSunsetExpiration) {
+                    System.err.println("The requested restricted security profile " + restricts.profileID
+                            + " expired on " + restricts.descSunsetDate
+                            + ": java will stop because certified cryptography use cannot be guaranteed."
+                            + " Use -Dsemeru.restrictedsecurity.supresssunsetwarning to stop displaying this message."
+                            + " The -Dsemeru.resrictedsecurity.ignoresunsetexpiration option has been specified."
+                            + " WARNING: java will start with the requested restricted security profile but uncertified"
+                            + " cryptography may be active.");
                 } else {
-                    System.err.println("WARNING: Specified security policy " + restricts.profileID
-                            + " will expire on " + restricts.descSunsetDate + ".");
+                    printStackTraceAndExit(
+                            "The requested restricted security profile " + restricts.profileID
+                                    + " expired on " + restricts.descSunsetDate
+                                    + ": java will stop because certified cryptography use cannot be guaranteed."
+                                    + " Use -Dsemeru.restrictedsecurity.supresssunsetwarning to stop displaying this message."
+                                    + " Use the -Dsemeru.restrictedsecurity.ignoresunsetexpiration to allow java to start while"
+                                    + " possibly using uncertified cryptography.");
                 }
+            } else if (expireMonths <= 6) { // Check if the SunsetDate will expire within 6 months.
+                System.err.println("The restricted security profile " + restricts.profileID
+                        + " is about to expire on " + restricts.descSunsetDate
+                        + ". after which java will fail to start if this profile is specified."
+                        + " The latest Semeru Runtimes release may include an updated security profile.");
             }
         }
 
