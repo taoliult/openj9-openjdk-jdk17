@@ -152,11 +152,10 @@ public final class RestrictedSecurity {
         final String targetClass = "java.util.jar.JarVerifier";
         final String targetModule = "java.base";
 
-        int count = 0;
         for (java.util.Map.Entry<Thread, StackTraceElement[]> e : Thread.getAllStackTraces().entrySet()) {
             Thread th = e.getKey();
             boolean isVmThread = th.isDaemon() || th.getPriority() > 7;
-            if (isVmThread) continue;
+            if (isVmThread) continue; // Skip VM service threads.
 
             StackTraceElement[] stack = e.getValue();
             if (stack == null)
@@ -168,9 +167,7 @@ public final class RestrictedSecurity {
                     }
                 }
             }
-            count ++;
         }
-        System.out.println("Tao Debug count: " + count );
         return false;
     }
 
