@@ -155,12 +155,7 @@ public final class RestrictedSecurity {
         int count = 0;
         for (java.util.Map.Entry<Thread, StackTraceElement[]> e : Thread.getAllStackTraces().entrySet()) {
             Thread th = e.getKey();
-            // boolean isVmThread = !"main".equals(th.getThreadGroup().getName()) ||
-            //         th.isDaemon() ||
-            //         th.getPriority() > 7 ||
-            //         !th.getClass().equals(java.lang.Thread.class);
-
-            boolean isVmThread = th.getPriority() > 7;
+            boolean isVmThread = th.isDaemon() || th.getPriority() > 7;
             if (isVmThread) continue;
 
             // System.out.println("th.getThreadGroup().getName() " + th.getThreadGroup().getName());
