@@ -158,12 +158,6 @@ public final class RestrictedSecurity {
             boolean isVmThread = th.isDaemon() || th.getPriority() > 7;
             if (isVmThread) continue;
 
-            // System.out.println("th.getThreadGroup().getName() " + th.getThreadGroup().getName());
-            // System.out.println("th.isDaemon() " + th.isDaemon());
-            // System.out.println("th.getPriority() " + th.getPriority());
-            // System.out.println("th.getClass() " + th.getClass());
-            // System.out.println("  ");
-
             StackTraceElement[] stack = e.getValue();
             if (stack == null)
                 continue;
