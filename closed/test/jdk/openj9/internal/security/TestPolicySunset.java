@@ -90,7 +90,6 @@ public class TestPolicySunset {
     @MethodSource("patternMatches_expectedExitValue0")
     public void shouldContain_expectedExitValue0(String customprofile, String securityPropertyFile, String supresssunsetwarning, String ignoresunsetexpiration, String expected) throws Exception {
         OutputAnalyzer outputAnalyzer = ProcessTools.executeTestJava(
-                jvmOptions,
                 "-Dsemeru.fips=true",
                 "-Dsemeru.customprofile=" + customprofile,
                 "-Djava.security.properties=" + securityPropertyFile,
