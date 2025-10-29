@@ -33,9 +33,16 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.Provider;
 import java.security.Security;
-
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.stream.Stream;
 
 import jdk.test.lib.process.OutputAnalyzer;
@@ -43,45 +50,67 @@ import jdk.test.lib.process.ProcessTools;
 
 public class TestPolicySunset {
 
+    private static Path updateExpireSoonSunsetFile(String baseFile) {
+        try {
+            LocalDate soonDate = LocalDate.now(ZoneOffset.UTC).plusMonths(1);
+            String newDate = soonDate.format(DateTimeFormatter.ISO_DATE);
+
+            String content = Files.readString(Paths.get(baseFile), StandardCharsets.UTF_8);
+            String pattern = "(?m)^(RestrictedSecurity\\.Test-Profile-PolicySunset-ExpireSoon\\.desc\\.sunsetDate)\\s*=.*$";
+            String updated = content.replaceAll(pattern, "$1 = " + newDate);
+
+            Path tmp = Files.createTempFile("sunset-java.security.expireSoon.", ".tmp");
+            Files.writeString(tmp, updated, StandardCharsets.UTF_8);
+            return tmp;
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to update sunset date for ExpireSoon profile", e);
+        }
+    }
+
     private static Stream<Arguments> patternMatches_expectedExitValue0() {
+        String propertyFile = System.getProperty("test.src") + "/sunset-java.security";
+        String updatedPropertyFile = updateExpireSoonSunsetFile(propertyFile).toString();
+
         return Stream.of(
                 // 1 - expired; supress=false; ignore=true
                 Arguments.of("Test-Profile-PolicySunset-Expired",
-                        System.getProperty("test.src") + "/property-java.security",
+                        propertyFile,
                         "false", "true",
                         "WARNING: java will start with the requested restricted security profile but uncertified cryptography may be active"),
                 // 2 - expired; supress=true; ignore=true, no warning
                 Arguments.of("Test-Profile-PolicySunset-Expired",
-                        System.getProperty("test.src") + "/property-java.security",
+                        propertyFile,
                         "true", "true",
                         ""),
                 // 3 - expire soon (<=6 months); supress=false 
                 Arguments.of("Test-Profile-PolicySunset-ExpireSoon",
-                        System.getProperty("test.src") + "/property-java.security",
+                        updatedPropertyFile,
                         "false", "false",
                         "The restricted security profile Test-Profile-PolicySunset.ExpireSoon is about to expire"),
                 // 4 - expire soon (<=6 months); supress=true, no warning
                 Arguments.of("Test-Profile-PolicySunset-ExpireSoon",
-                        System.getProperty("test.src") + "/property-java.security",
+                        updatedPropertyFile,
                         "true", "false",
                         ""),
                 // 5 - not expire (>6 months); no warning
                 Arguments.of("Test-Profile-PolicySunset-NotExpire",
-                        System.getProperty("test.src") + "/property-java.security",
+                        propertyFile,
                         "false", "false",
                         ""));
     }
 
     private static Stream<Arguments> patternMatches_expectedExitValue1() {
+        String propertyFile = System.getProperty("test.src") + "/sunset-java.security";
+
         return Stream.of(
                 // 1 - expired; supress=false; ignore=false
                 Arguments.of("Test-Profile-PolicySunset-Expired",
-                        System.getProperty("test.src") + "/property-java.security",
+                        propertyFile,
                         "false", "false",
                         "Use the -Dsemeru.restrictedsecurity.ignoresunsetexpiration to allow java to start while possibly using uncertified cryptography"),
                 // 2 - expired; supress=true; ignore=false, no warning
                 Arguments.of("Test-Profile-PolicySunset-Expired",
-                        System.getProperty("test.src") + "/property-java.security",
+                        propertyFile,
                         "true", "false",
                         ""));
     }
