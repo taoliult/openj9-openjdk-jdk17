@@ -45,28 +45,45 @@ public class TestPolicySunset {
 
     private static Stream<Arguments> patternMatches_expectedExitValue0() {
         return Stream.of(
-                // 1 - Test property - policy sunset but ignore sunset expiration
-                // and not supress sunset warning.
-                Arguments.of("Test-Profile-PolicySunset.Base",
+                // 1 - expired; supress=false; ignore=true
+                Arguments.of("Test-Profile-PolicySunset-Expired",
                         System.getProperty("test.src") + "/property-java.security",
-                        false, true, 
-                        "Restricted security policy has expired")
-        );
+                        "false", "true",
+                        "WARNING: java will start with the requested restricted security profile but uncertified cryptography may be active"),
+                // 2 - expired; supress=true; ignore=true, no warning
+                Arguments.of("Test-Profile-PolicySunset-Expired",
+                        System.getProperty("test.src") + "/property-java.security",
+                        "true", "true",
+                        ""),
+                // 3 - expire soon (<=6 months); supress=false 
+                Arguments.of("Test-Profile-PolicySunset-ExpireSoon",
+                        System.getProperty("test.src") + "/property-java.security",
+                        "false", "false",
+                        "The restricted security profile Test-Profile-PolicySunset.ExpireSoon is about to expire"),
+                // 4 - expire soon (<=6 months); supress=true, no warning
+                Arguments.of("Test-Profile-PolicySunset-ExpireSoon",
+                        System.getProperty("test.src") + "/property-java.security",
+                        "true", "false",
+                        ""),
+                // 5 - not expire (>6 months); no warning
+                Arguments.of("Test-Profile-PolicySunset-NotExpire",
+                        System.getProperty("test.src") + "/property-java.security",
+                        "false", "false",
+                        ""));
     }
 
     private static Stream<Arguments> patternMatches_expectedExitValue1() {
         return Stream.of(
-                // 1 - Test property - policy sunset.
-                Arguments.of("Test-Profile-PolicySunset.Base",
+                // 1 - expired; supress=false; ignore=false
+                Arguments.of("Test-Profile-PolicySunset-Expired",
                         System.getProperty("test.src") + "/property-java.security",
-                        false, false,
-                        "Restricted security policy has expired"),
-                
-                //         // 2 - Test property - policy sunset format.
-                // Arguments.of("Test-Profile-PolicySunsetFormat.Base",
-                //         System.getProperty("test.src") + "/property-java.security",
-                //         "Restricted security policy sunset date is incorrect, the correct format is yyyy-MM-dd")
-        );
+                        "false", "false",
+                        "Use the -Dsemeru.restrictedsecurity.ignoresunsetexpiration to allow java to start while possibly using uncertified cryptography"),
+                // 2 - expired; supress=true; ignore=false, no warning
+                Arguments.of("Test-Profile-PolicySunset-Expired",
+                        System.getProperty("test.src") + "/property-java.security",
+                        "true", "false",
+                        ""));
     }
 
     @ParameterizedTest
