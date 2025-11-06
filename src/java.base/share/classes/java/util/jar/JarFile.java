@@ -26,6 +26,7 @@
 package java.util.jar;
 
 import jdk.internal.access.SharedSecrets;
+import openj9.internal.security.RestrictedSecurity;
 import jdk.internal.access.JavaUtilZipFileAccess;
 import sun.security.action.GetPropertyAction;
 import sun.security.util.ManifestEntryVerifier;
@@ -1035,9 +1036,13 @@ public class JarFile extends ZipFile {
         if (jv != null && !jvInitialized) {
             isInitializing.set(Boolean.TRUE);
             try {
+                RestrictedSecurity.pauseHashCheck();
+                System.out.println("PAUSE HashCheck in JarFile");
                 initializeVerifier();
                 jvInitialized = true;
             } finally {
+                RestrictedSecurity.resumeHashCheck();
+                System.out.println("RESUME HashCheck in JarFile");
                 isInitializing.set(Boolean.FALSE);
             }
         }

@@ -45,6 +45,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -84,6 +85,7 @@ public final class RestrictedSecurity {
 
     private static RestrictedSecurityProperties restricts;
 
+    private static final AtomicInteger hashPauseCount = new AtomicInteger(0);
     private static final Set<String> unmodifiableProperties = new HashSet<>();
 
     static {
@@ -178,7 +180,8 @@ public final class RestrictedSecurity {
             if (fromProviders) {
                 enableCheckHashes = true;
             }
-            if (enableCheckHashes) {
+            System.out.println("checkHashValues hashPauseCount.get(): " + hashPauseCount.get());
+            if (enableCheckHashes && (hashPauseCount.get() == 0)) {
                 boolean isVerifying;
                 if (System.getSecurityManager() == null) {
                     isVerifying = isJarVerifierInStackTrace();
@@ -191,6 +194,16 @@ public final class RestrictedSecurity {
                 }
             }
         }
+    }
+
+    public static void pauseHashCheck() {
+            hashPauseCount.incrementAndGet();
+            System.out.println("PAUSE hashPauseCount.get(): " + hashPauseCount.get());
+    }
+
+    public static void resumeHashCheck() {
+            hashPauseCount.decrementAndGet();
+            System.out.println("RESUME hashPauseCount.get(): " + hashPauseCount.get());
     }
 
     /**
@@ -276,7 +289,7 @@ public final class RestrictedSecurity {
      */
     public static boolean canServiceBeRegistered(Service service) {
         if (securityEnabled) {
-            checkHashValues(false);
+            //checkHashValues(false);
             return restricts.isRestrictedServiceAllowed(service, false);
         }
         return true;
