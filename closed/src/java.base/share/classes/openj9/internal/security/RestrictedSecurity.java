@@ -150,18 +150,6 @@ public final class RestrictedSecurity {
         super();
     }
 
-    private static boolean isJarVerifierInStackTrace() {
-        java.util.function.Predicate<Class<?>> isJarVerifier =
-                clazz -> "java.util.jar.JarVerifier".equals(clazz.getName())
-                      && "java.base".equals(clazz.getModule().getName());
-
-        java.util.function.Function<Stream<StackWalker.StackFrame>, Boolean> matcher =
-                stream -> stream.map(StackWalker.StackFrame::getDeclaringClass)
-                                .anyMatch(isJarVerifier);
-
-        return StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk(matcher);
-    }
-
     /**
      * Check loaded profiles' hash values.
      *
@@ -182,16 +170,8 @@ public final class RestrictedSecurity {
             }
             System.out.println("checkHashValues hashPauseCount.get(): " + hashPauseCount.get());
             if (enableCheckHashes && (hashPauseCount.get() == 0)) {
-                boolean isVerifying;
-                if (System.getSecurityManager() == null) {
-                    isVerifying = isJarVerifierInStackTrace();
-                } else {
-                    isVerifying = AccessController.doPrivileged((PrivilegedAction<Boolean>)(() -> isJarVerifierInStackTrace()));
-                }
-                if (!isVerifying) {
-                    profileParser = null;
-                    parser.checkHashValues();
-                }
+                profileParser = null;
+                parser.checkHashValues();
             }
         }
     }
