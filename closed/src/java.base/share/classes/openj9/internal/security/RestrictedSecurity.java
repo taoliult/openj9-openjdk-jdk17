@@ -269,7 +269,7 @@ public final class RestrictedSecurity {
      */
     public static boolean canServiceBeRegistered(Service service) {
         if (securityEnabled) {
-            //checkHashValues(false);
+            checkHashValues(false);
             return restricts.isRestrictedServiceAllowed(service, false);
         }
         return true;
