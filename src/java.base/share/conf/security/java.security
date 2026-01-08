@@ -421,7 +421,7 @@ RestrictedSecurity.OpenJCEPlusFIPS.FIPS140-3-Strongly-Enforced.jce.provider.6 = 
 
 RestrictedSecurity.OJCPlusFIPS.Strong.desc.name = OpenJCEPlusFIPS Cryptographic Module FIPS 140-3 Including Additional Java Services
 RestrictedSecurity.OJCPlusFIPS.Strong.desc.default = false
-RestrictedSecurity.OJCPlusFIPS.Strong.desc.hash = SHA256:5b6fa14538ed0a7b89bc187da998519fe0650d7b25b9270e419536deff39467a
+RestrictedSecurity.OJCPlusFIPS.Strong.desc.hash = SHA256:fee94e719f7e785a51e7967a6f5cdf858735e54549b57e4f64752169dd77ab3e
 RestrictedSecurity.OJCPlusFIPS.Strong.extends = RestrictedSecurity.OpenJCEPlusFIPS.FIPS140-3
 RestrictedSecurity.OJCPlusFIPS.Strong.jce.provider.1 = com.ibm.crypto.plus.provider.OpenJCEPlusFIPS [+ \
     {MessageDigest, MD5, *, ModuleAndFullClassName:java.base/sun.security.pkcs12.PKCS12KeyStore}, \
