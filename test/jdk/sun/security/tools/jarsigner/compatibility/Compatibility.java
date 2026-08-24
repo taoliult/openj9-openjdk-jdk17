@@ -286,7 +286,11 @@ public class Compatibility {
 
         for (JdkInfo jdkInfo : jdkInfoList) {
             for (String keyAlgorithm : keyAlgs()) {
-                if (!jdkInfo.supportsKeyAlg(keyAlgorithm)) continue;
+                if (!jdkInfo.supportsKeyAlg(keyAlgorithm)) {
+                    System.out.println("createCertificates: skipping keyAlg=" + keyAlgorithm
+                            + " (not supported by " + jdkInfo + ")");
+                    continue;
+                }
                 for (int keySize : keySizes(keyAlgorithm)) {
                     for (String digestAlgorithm : digestAlgs()) {
                         for(boolean expired : EXPIRED) {
@@ -294,6 +298,8 @@ public class Compatibility {
                             // key algorithm.
                             if (expired
                                     && !expiredCertFilter.add(keyAlgorithm)) {
+                                System.out.println("createCertificates: skipping duplicate"
+                                        + " expired cert for keyAlg=" + keyAlgorithm);
                                 continue;
                             }
 
@@ -308,8 +314,13 @@ public class Compatibility {
                             String sigalg = certInfo.sigalg();
                             if (sigalg != null &&
                                     !jdkInfo.isSupportedSigalg(sigalg)) {
+                                System.out.println("createCertificates: skipping certInfo="
+                                        + certInfo + " sigalg=" + sigalg
+                                        + " (not supported by " + jdkInfo + ")");
                                 continue;
                             }
+                            System.out.println("createCertificates: creating cert for "
+                                    + certInfo + " sigalg=" + sigalg);
                             createCertificate(jdkInfo, certInfo);
                             certList.add(certInfo);
                         }
@@ -317,6 +328,7 @@ public class Compatibility {
                 }
             }
         }
+        System.out.println("createCertificates: created " + certList.size() + " certificate(s)");
 
         System.out.println("the keystore contents:");
         for (JdkInfo jdkInfo : jdkInfoList) {
@@ -566,14 +578,19 @@ public class Compatibility {
         // certificate was already expired during jar signature verification
         // (jarsigner -verify) and the test should probably be repeated with an
         // increased validity period -DcertValidity CERT_VALIDITY
+        if (lastCertStartTime == 0) {
+            throw new AssertionError("No non-expired certificate was created. "
+                    + "Check that the configured key and digest algorithms are "
+                    + "supported by the JDK under test.");
+        }
         long lastCertExpirationTime = lastCertStartTime + 24 * 60 * 60 * 1000;
         if (lastCertExpirationTime < System.currentTimeMillis()) {
+            long overrunMs = System.currentTimeMillis() - lastCertExpirationTime;
             throw new AssertionError("CERT_VALIDITY (" + CERT_VALIDITY
                     + " [minutes]) was too short. "
                     + "Creating and signing the jars took longer, "
                     + "presumably at least "
-                    + ((lastCertExpirationTime - System.currentTimeMillis())
-                            / 60 * 1000 + CERT_VALIDITY) + " [minutes].");
+                    + (overrunMs / 60_000 + CERT_VALIDITY) + " [minutes].");
         }
 
         if (DELAY_VERIFY) {
@@ -1035,20 +1052,21 @@ public class Compatibility {
     // ensures the output is in US English.
     private static OutputAnalyzer execTool(String toolPath, String... args)
             throws Throwable {
+        String[] cmd = new String[args.length + 3];
+        System.arraycopy(args, 0, cmd, 3, args.length);
+        cmd[0] = toolPath;
+        cmd[1] = "-J-Duser.language=en";
+        cmd[2] = "-J-Duser.country=US";
+        System.out.println("execTool: " + java.util.Arrays.toString(cmd));
         long start = System.currentTimeMillis();
         try {
-            String[] cmd;
-
-            cmd = new String[args.length + 3];
-            System.arraycopy(args, 0, cmd, 3, args.length);
-            cmd[0] = toolPath;
-            cmd[1] = "-J-Duser.language=en";
-            cmd[2] = "-J-Duser.country=US";
-            return ProcessTools.executeCommand(cmd);
-
+            OutputAnalyzer oa = ProcessTools.executeCommand(cmd);
+            System.out.println("execTool exit=" + oa.getExitValue()
+                    + " output:\n" + oa.getOutput());
+            return oa;
         } finally {
             long end = System.currentTimeMillis();
-            System.out.println("child process duration [ms]: " + (end - start));
+            System.out.println("execTool duration [ms]: " + (end - start));
         }
     }
 
