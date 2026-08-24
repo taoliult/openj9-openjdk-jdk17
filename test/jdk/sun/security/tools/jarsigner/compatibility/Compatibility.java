@@ -1045,7 +1045,20 @@ public class Compatibility {
         cmd[3] = JdkUtils.class.getName();
         cmd[4] = method;
         System.arraycopy(args, 0, cmd, 5, args.length);
-        return ProcessTools.executeCommand(cmd).getStdout();
+        System.out.println("execJdkUtils: " + java.util.Arrays.toString(cmd));
+        OutputAnalyzer oa = ProcessTools.executeCommand(cmd);
+        // JdkUtils prints its result last with System.out.print (no newline).
+        // On some JDKs (e.g. OpenJCEPlusFIPS) extra warning lines are printed
+        // to stdout before the result, so take only the last line to avoid
+        // Boolean.parseBoolean / other callers misreading the prefixed noise.
+        String stdout = oa.getStdout();
+        String result = stdout.lines()
+                .reduce((first, second) -> second)  // last line
+                .orElse(stdout)
+                .trim();
+        System.out.println("execJdkUtils result: " + result
+                + (stdout.equals(result) ? "" : " (full stdout: " + stdout + ")"));
+        return result;
     }
 
     // Executes the specified JDK tools, such as keytool and jarsigner, and
