@@ -166,7 +166,8 @@ public class Compatibility {
         PrintStream origStdOut = System.out;
         PrintStream origStdErr = System.err;
 
-        detailsOutput = new DetailsOutputStream(outfile());
+        // Tee output to the original stdout so debug info is visible during the run.
+        detailsOutput = new DetailsOutputStream(outfile(), origStdOut);
 
         // Redirects the system output to a custom one.
         PrintStream printStream = new PrintStream(detailsOutput);

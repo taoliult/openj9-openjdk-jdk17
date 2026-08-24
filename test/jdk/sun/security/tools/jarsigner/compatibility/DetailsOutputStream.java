@@ -24,19 +24,28 @@
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 /*
  * A custom output stream that redirects the testing outputs to a file, called
  * details.out. It also calls another output stream to save some outputs to
- * other files.
+ * other files. When a console stream is provided, output is tee'd to it so
+ * debug info is visible in real-time during the test run.
  */
 public class DetailsOutputStream extends FileOutputStream {
 
     private PhaseOutputStream phaseOutputStream = new PhaseOutputStream();
+    private OutputStream consoleStream;
 
     public DetailsOutputStream(String filename) throws FileNotFoundException {
         super(filename != null && !filename.isEmpty() ? filename :
             "details.out", true);
+    }
+
+    public DetailsOutputStream(String filename, OutputStream consoleStream)
+            throws FileNotFoundException {
+        this(filename);
+        this.consoleStream = consoleStream;
     }
 
     public void transferPhase() throws IOException {
@@ -57,18 +66,21 @@ public class DetailsOutputStream extends FileOutputStream {
     public void write(byte[] b) throws IOException {
         super.write(b);
         phaseOutputStream.write(b);
+        if (consoleStream != null) consoleStream.write(b);
     }
 
     @Override
     public void write(int b) throws IOException {
         super.write(b);
         phaseOutputStream.write(b);
+        if (consoleStream != null) consoleStream.write(b);
     }
 
     @Override
     public void write(byte b[], int off, int len) throws IOException {
         super.write(b, off, len);
         phaseOutputStream.write(b, off, len);
+        if (consoleStream != null) consoleStream.write(b, off, len);
     }
 
     public void writeAnchorName(String name, String text) throws IOException {
@@ -76,5 +88,8 @@ public class DetailsOutputStream extends FileOutputStream {
         super.write('\n');
         phaseOutputStream.write(HtmlHelper.anchorName(name, text));
         phaseOutputStream.write('\n');
+        if (consoleStream != null) {
+            consoleStream.write((text + "\n").getBytes());
+        }
     }
 }
