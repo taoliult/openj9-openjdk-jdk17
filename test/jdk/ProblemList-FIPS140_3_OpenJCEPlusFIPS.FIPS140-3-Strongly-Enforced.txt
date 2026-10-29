@@ -751,6 +751,7 @@ sun/security/pkcs11/Config/ReadConfInUTF16Env.java https://github.ibm.com/runtim
 sun/security/pkcs11/fips/TestTLS12.java https://github.com/eclipse-openj9/openj9/issues/20343 generic-all
 sun/security/pkcs11/KeyStore/ClientAuth.java https://github.com/eclipse-openj9/openj9/issues/20343 generic-all
 sun/security/pkcs11/Provider/Absolute.java https://github.com/eclipse-openj9/openj9/issues/20343 generic-all
+sun/security/pkcs11/sslecc/ClientJSSEServerJSSE.java https://github.com/eclipse-openj9/openj9/issues/20343 generic-all
 sun/security/pkcs11/tls/tls12/FipsModeTLS12.java https://github.ibm.com/runtimes/backlog/issues/1089 generic-all
 sun/security/pkcs12/AttributesCorrectness.java https://github.com/eclipse-openj9/openj9/issues/20343 generic-all
 sun/security/pkcs12/AttributesMultiThread.java https://github.com/eclipse-openj9/openj9/issues/20343 generic-all

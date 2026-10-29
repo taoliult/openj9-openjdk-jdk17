@@ -790,6 +790,7 @@ sun/security/pkcs11/Signature/ReinitSignature.java https://github.com/eclipse-op
 sun/security/pkcs11/Signature/SigInteropPSS.java https://github.com/eclipse-openj9/openj9/issues/20978 linux-ppc64le,linux-s390x,linux-x64
 sun/security/pkcs11/Signature/SignatureTestPSS.java https://github.com/eclipse-openj9/openj9/issues/20978 linux-ppc64le,linux-s390x,linux-x64
 sun/security/pkcs11/Signature/TestDSA2.java https://github.com/eclipse-openj9/openj9/issues/20978 linux-ppc64le,linux-s390x,linux-x64
+sun/security/pkcs11/sslecc/ClientJSSEServerJSSE.java https://github.com/eclipse-openj9/openj9/issues/20978 generic-all
 sun/security/pkcs11/tls/TestKeyMaterialChaCha20.java https://github.com/eclipse-openj9/openj9/issues/20978 linux-ppc64le,linux-s390x,linux-x64
 sun/security/pkcs11/tls/tls12/FipsModeTLS12.java https://github.com/eclipse-openj9/openj9/issues/20978 generic-all
 sun/security/pkcs12/Bug6415637.java https://github.com/eclipse-openj9/openj9/issues/20978 generic-all
